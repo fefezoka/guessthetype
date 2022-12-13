@@ -1,8 +1,7 @@
 import { styled } from '../../styles/stitches.config';
 
 export const Main = styled('main', {
-  maxWidth: '1152px',
-  margin: '.5rem auto',
+  margin: '.5rem 0',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -10,6 +9,6 @@ export const Main = styled('main', {
   gap: '2.5rem',
 
   '@dsk2': {
-    margin: '2rem auto',
+    margin: '2rem 0',
   },
 });

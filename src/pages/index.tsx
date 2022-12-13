@@ -4,17 +4,16 @@ import Image from 'next/image';
 import { useReducer, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Button } from '../components/button/Button';
+import { ImageWrapper } from '../components/ImageWrapper/ImageWrapper';
 import { Main } from '../components/main/Main';
 import { TypeIcon } from '../components/typeIcon/TypeIcon';
 import { TypesGrid } from '../components/typesGrid/TypesGrid';
 import { reducer, initialState } from '../reducers/gameReducer';
 
-const MAX_POKEMONS = 1007;
+const MAX_POKEMONS = 905;
 
 export default function Home() {
   const [gameData, dispatch] = useReducer(reducer, initialState);
-  const [guessed, setGuessed] = useState<boolean>(false);
-  const [rightAnswer, setRightAnswer] = useState<boolean>(false);
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([]);
 
   const arr = [
@@ -65,7 +64,7 @@ export default function Home() {
       .sort();
 
     JSON.stringify(filter) === JSON.stringify(selectedTypes.sort())
-      ? (() => dispatch({ type: 'right' }))()
+      ? dispatch({ type: 'right' })
       : dispatch({ type: 'wrong' });
   };
 
@@ -88,17 +87,20 @@ export default function Home() {
       </Head>
       <Main>
         <div style={{ position: 'relative' }}>
-          <Image
-            src={pokemon?.sprites.other['official-artwork'].front_default}
-            alt=""
-            width={320}
-            height={320}
-          />
+          <ImageWrapper>
+            <Image
+              src={pokemon.sprites.other['official-artwork'].front_default}
+              sizes="100%"
+              priority
+              alt=""
+              fill
+            />
+          </ImageWrapper>
           <div
             style={{
               position: 'absolute',
               top: '20px',
-              right: '0',
+              right: '-65px',
             }}
           >
             {pokemon.types.map((type) => (
@@ -109,6 +111,11 @@ export default function Home() {
                 />
               </div>
             ))}
+          </div>
+
+          <div style={{ position: 'absolute', top: '20px', left: '-65px' }}>
+            <h3>Streak</h3>
+            <h3>{gameData.streak}</h3>
           </div>
           <h2 style={{ textTransform: 'capitalize' }}>{pokemon.name}</h2>
         </div>
@@ -124,24 +131,21 @@ export default function Home() {
           ))}
         </TypesGrid>
 
-        <div>
-          <Button onClick={() => guessTheType()}>Guess</Button>
-        </div>
-
-        {gameData.guessed && (
-          <div>
-            <p>{gameData.rightAnswer ? 'Acertou' : 'Errou'}</p>
-
-            <Button
-              onClick={() => {
-                refetch();
-                dispatch({ type: 'reset' });
-                setSelectedTypes([]);
-              }}
-            >
-              Continue
-            </Button>
-          </div>
+        {gameData.guessed ? (
+          <Button
+            onClick={() => {
+              refetch();
+              dispatch({ type: 'reset' });
+              setSelectedTypes([]);
+            }}
+            color={gameData.rightAnswer ? 'green' : 'red'}
+          >
+            <p>{gameData.rightAnswer ? 'Right' : 'Wrong'}</p>
+          </Button>
+        ) : (
+          <Button onClick={() => guessTheType()} disabled={selectedTypes.length === 0}>
+            Guess
+          </Button>
         )}
       </Main>
     </>

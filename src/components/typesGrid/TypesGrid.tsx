@@ -7,6 +7,6 @@ export const TypesGrid = styled('div', {
 
   '@dsk2': {
     gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
-    gap: '1rem',
+    gap: '.75rem',
   },
 });
