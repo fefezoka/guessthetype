@@ -56,6 +56,18 @@ export default function Home() {
     return;
   }
 
+  const insertGuess = (guess: Type) => {
+    if (gameData.guessed) {
+      return;
+    }
+
+    if (selectedTypes.includes(guess)) {
+      setSelectedTypes((t) => [...t.filter((t) => t !== guess)]);
+    } else {
+      setSelectedTypes((t) => [...t, guess]);
+    }
+  };
+
   const guessTheType = async () => {
     if (selectedTypes.length === 0 || gameData.guessed) {
       return;
@@ -84,18 +96,6 @@ export default function Home() {
           streak: gameData.streak + 1,
         })
       : await axios.post('/api/user/lose', { id: session.user.id });
-  };
-
-  const insertGuess = (guess: Type) => {
-    if (gameData.guessed) {
-      return;
-    }
-
-    if (selectedTypes.includes(guess)) {
-      setSelectedTypes((t) => [...t.filter((t) => t !== guess)]);
-    } else {
-      setSelectedTypes((t) => [...t, guess]);
-    }
   };
 
   return (
