@@ -6,7 +6,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = ({ color, children, ...props }: Props) => {
-  const bg = color ? (color === 'green' ? 'bg-[#7c5]' : 'bg-[#f42]') : 'bg-[#50647d]';
+  const bg = color ? (color === 'green' ? 'bg-[#7c5]' : 'bg-[#f42]') : 'bg-[#5b718c]';
 
   return (
     <button

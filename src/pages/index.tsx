@@ -8,6 +8,7 @@ import { Button } from '../components/Button';
 import { Ranking } from '../components/Ranking';
 import { TypeIcon } from '../components/TypeIcon';
 import { reducer, initialState } from '../reducers/gameReducer';
+import Spinner from '../assets/Spinner.svg';
 
 const MAX_POKEMONS = 905;
 
@@ -15,9 +16,9 @@ export default function Home() {
   const [gameData, dispatch] = useReducer(reducer, initialState);
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([]);
   const [rankingActive, setRankingActive] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  const arr: Array<{
+  const types: Array<{
     name: Type;
     color: string;
   }> = [
@@ -26,9 +27,9 @@ export default function Home() {
     { name: 'water', color: 'bg-[#39f]' },
     { name: 'bug', color: 'bg-[#ab2]' },
     { name: 'normal', color: 'bg-[#aa9]' },
-    { name: 'poison', color: 'bg-[#a59]' },
-    { name: 'ghost', color: 'bg-[#66b]' },
+    { name: 'ground', color: 'bg-[#db5]' },
     { name: 'rock', color: 'bg-[#ba6]' },
+    { name: 'poison', color: 'bg-[#a59]' },
     { name: 'electric', color: 'bg-[#fc3]' },
     { name: 'fighting', color: 'bg-[#b54]' },
     { name: 'flying', color: 'bg-[#89f]' },
@@ -36,7 +37,7 @@ export default function Home() {
     { name: 'dragon', color: 'bg-[#76e]' },
     { name: 'psychic', color: 'bg-[#f59]' },
     { name: 'dark', color: 'bg-[#754]' },
-    { name: 'ground', color: 'bg-[#db5]' },
+    { name: 'ghost', color: 'bg-[#66b]' },
     { name: 'ice', color: 'bg-[#6ef]' },
     { name: 'fairy', color: 'bg-[#e9e]' },
   ];
@@ -52,7 +53,17 @@ export default function Home() {
     { refetchOnWindowFocus: false }
   );
 
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center h-screen flex-col gap-2">
+        <h2 className="text-2xl font-bold">Guess the Type</h2>
+        <Image src={Spinner} alt="" height={52} width={52} />
+      </div>
+    );
+  }
+
   if (!pokemon) {
+    refetch();
     return;
   }
 
@@ -129,9 +140,9 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className="mt-2 flex justify-center flex-col items-center text-center gap-10 lg:mt-8">
+      <main className="mt-2 flex justify-center flex-col items-center text-center gap-6 lg:mt-6">
         <div className="relative">
-          <div className="w-[240px] h-[240px] lg:w-[320px] lg:h-[320px] relative">
+          <div className="w-[240px] h-[240px] lg:w-[300px] lg:h-[300px] relative">
             <Image
               src={pokemon.sprites.other['official-artwork'].front_default}
               priority
@@ -144,7 +155,8 @@ export default function Home() {
               <div key={type.type.name} className="mb-2">
                 <TypeIcon
                   pokemonType={
-                    (gameData.guessed && arr.find((f) => f.name === type.type.name)) || {
+                    (gameData.guessed &&
+                      types.find((t) => t.name === type.type.name)) || {
                       name: 'unknown',
                       color: 'bg-[#ccc]',
                     }
@@ -162,7 +174,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3">
-          {arr.map((type) => (
+          {types.map((type) => (
             <TypeIcon
               key={type.name}
               pokemonType={type}
@@ -184,10 +196,13 @@ export default function Home() {
             }}
             color={gameData.rightAnswer ? 'green' : 'red'}
           >
-            <p>{gameData.rightAnswer ? 'Right' : 'Wrong'}</p>
+            {gameData.rightAnswer ? 'Right' : 'Wrong'}
           </Button>
         ) : (
-          <Button onClick={() => guessTheType()} disabled={selectedTypes.length === 0}>
+          <Button
+            onClick={guessTheType}
+            disabled={selectedTypes.length !== pokemon.types.length}
+          >
             Guess
           </Button>
         )}

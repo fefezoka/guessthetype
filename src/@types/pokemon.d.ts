@@ -8,13 +8,11 @@ interface Pokemon {
       };
     };
   };
-  types: typearr[];
-}
-
-interface typearr {
-  type: {
-    name: Type;
-  };
+  types: {
+    type: {
+      name: Type;
+    };
+  }[];
 }
 
 type Type =

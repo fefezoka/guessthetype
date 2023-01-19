@@ -7,7 +7,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const TypeIcon = ({ pokemonType, active, ...props }: Props) => {
   const border = active
-    ? 'border-[3px] border-orange-400 -translate-y-[15%]'
+    ? 'border-[3px] border-orange-400'
     : 'border-[1.5px] border-[rgb(0,0,0,.2)]';
 
   return (
