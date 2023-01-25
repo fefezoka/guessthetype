@@ -1,8 +1,18 @@
 import { prisma } from '../../../lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/react';
 
 export default async function win(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession({ req: req });
+  if (!session) {
+    return res.status(200).json({ message: 'authorization error' });
+  }
+
   const { id, streak } = req.body;
+
+  if (!id || !streak) {
+    return res.status(200).json({ message: 'error' });
+  }
 
   const actual = await prisma.user.findUnique({
     where: {
