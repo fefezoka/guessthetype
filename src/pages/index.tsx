@@ -73,9 +73,9 @@ export default function Home() {
     }
 
     if (selectedTypes.includes(guess)) {
-      setSelectedTypes((t) => [...t.filter((t) => t !== guess)]);
+      setSelectedTypes(selectedTypes.filter((type) => type !== guess));
     } else {
-      setSelectedTypes((t) => [...t, guess]);
+      setSelectedTypes([...selectedTypes, guess]);
     }
   };
 
