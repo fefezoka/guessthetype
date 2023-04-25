@@ -17,6 +17,10 @@ const StyledTypeIcon = styled('button', {
   border: '1.5px solid rgb(0,0,0,.5)',
   transition: 'all 200ms',
 
+  '&:hover': {
+    filter: 'brightness(110%) saturate(130%)',
+  },
+
   variants: {
     pokeType: {
       grass: { bc: '$grass' },

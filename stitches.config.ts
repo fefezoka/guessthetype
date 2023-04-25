@@ -49,6 +49,9 @@ export const {
       ghost: '#66b',
       ice: '#6ef',
       fairy: '#e9e',
+      gold: '#FFD700',
+      silver: 'rgb(141, 142, 145)',
+      bronze: 'rgb(205, 127, 50)',
     },
     fontSizes: {
       1: '11px',

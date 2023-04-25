@@ -93,15 +93,15 @@ export default function Home() {
     <>
       <NextSeo title="Guess the Type" />
       <Header />
-      <Flex
+      <Box
         as={'main'}
-        justify={'center'}
-        direction={'column'}
-        align={'center'}
-        gap={'4'}
-        css={{ ta: 'center', mt: '$5' }}
+        css={{
+          ta: 'center',
+          m: '$5 auto 0',
+          '@bp2': { maxWidth: 'fit-content' },
+        }}
       >
-        <Box css={{ position: 'relative' }}>
+        <Flex align={'center'} justify={'center'}>
           <Box css={{ size: 240, position: 'relative', '@bp2': { size: 300 } }}>
             <Image
               src={pokemon.sprites.other['official-artwork'].front_default}
@@ -109,38 +109,36 @@ export default function Home() {
               alt=""
               fill
             />
+            <Box css={{ position: 'absolute', top: 16, right: -32 }}>
+              {pokemon.types.map((type) => (
+                <Box css={{ mb: '$2' }} key={type.type.name}>
+                  <TypeIcon
+                    pokeType={
+                      (gameData.guessed && types.find((t) => t === type.type.name)) ||
+                      'unknown'
+                    }
+                  />
+                </Box>
+              ))}
+            </Box>
+            <Box css={{ position: 'absolute', top: 16, left: -32 }}>
+              <Text as={'p'} weight={600}>
+                Streak
+              </Text>
+              <Text weight={600}>{gameData.streak}</Text>
+            </Box>
           </Box>
-          <Box css={{ position: 'absolute', top: 16, right: -32 }}>
-            {pokemon.types.map((type) => (
-              <Box css={{ mb: '$2' }} key={type.type.name}>
-                <TypeIcon
-                  pokeType={
-                    (gameData.guessed && types.find((t) => t === type.type.name)) ||
-                    'unknown'
-                  }
-                />
-              </Box>
-            ))}
-          </Box>
+        </Flex>
 
-          <Box css={{ position: 'absolute', top: 16, left: -32 }}>
-            <Text as={'p'} size={'6'} weight={600}>
-              Streak
-            </Text>
-            <Text size={'6'} weight={600}>
-              {gameData.streak}
-            </Text>
-          </Box>
-          <Heading size="3" css={{ textTransform: 'capitalize' }}>
-            {pokemon.name}
-          </Heading>
-        </Box>
+        <Heading size="3" css={{ textTransform: 'capitalize', lh: 'unset' }}>
+          {pokemon.name}
+        </Heading>
 
         <Box>
           <Grid
             columns={{ '@initial': 3, '@bp2': 6 }}
             gap={{ '@initial': '2', '@bp2': '3' }}
-            css={{ mb: '$3' }}
+            css={{ my: '$3', width: 'fit-content', mx: 'auto' }}
           >
             {types.map((type) => (
               <TypeIcon
@@ -153,29 +151,28 @@ export default function Home() {
               </TypeIcon>
             ))}
           </Grid>
-
-          {gameData.guessed ? (
-            <Button
-              type="button"
-              onClick={() => {
-                refetch();
-                dispatch({ type: 'reset' });
-                setSelectedTypes([]);
-              }}
-              win={gameData.rightAnswer}
-            >
-              {gameData.rightAnswer ? 'Right' : 'Wrong'}
-            </Button>
-          ) : (
-            <Button
-              onClick={guessTheType}
-              disabled={selectedTypes.length !== pokemon.types.length}
-            >
-              Guess
-            </Button>
-          )}
         </Box>
-      </Flex>
+        {gameData.guessed ? (
+          <Button
+            type="button"
+            onClick={() => {
+              refetch();
+              dispatch({ type: 'reset' });
+              setSelectedTypes([]);
+            }}
+            win={gameData.rightAnswer}
+          >
+            {gameData.rightAnswer ? 'Right' : 'Wrong'}
+          </Button>
+        ) : (
+          <Button
+            onClick={guessTheType}
+            disabled={selectedTypes.length !== pokemon.types.length}
+          >
+            Guess
+          </Button>
+        )}
+      </Box>
     </>
   );
 }

@@ -35,7 +35,15 @@ export const Ranking = () => {
   return (
     <Modal open={open} onOpenChange={setOpen}>
       <ModalTrigger asChild>
-        <Flex as={'button'}>
+        <Flex
+          as={'button'}
+          css={{
+            p: '$3',
+            transition: 'all 200ms ease-in',
+            br: '$7',
+            '&:hover': { bc: '$bg-2' },
+          }}
+        >
           <Text weight={600}>Ranking</Text>
         </Flex>
       </ModalTrigger>
@@ -81,7 +89,7 @@ export const Ranking = () => {
                         <Text as={'p'}>{index + 1}º</Text>
                         <Box css={{ position: 'relative' }}>
                           <ProfileIcon src={user.image} alt="" css={{ size: 52 }} />
-                          {index === 0 && (
+                          {index < 3 && (
                             <Box
                               as={FaCrown}
                               css={{
@@ -89,7 +97,12 @@ export const Ranking = () => {
                                 top: -10,
                                 left: 15,
                                 size: 20,
-                                color: 'Yellow',
+                                color:
+                                  index === 0
+                                    ? '$gold'
+                                    : index === 1
+                                    ? '$silver'
+                                    : '$bronze',
                               }}
                             />
                           )}
