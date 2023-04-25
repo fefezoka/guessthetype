@@ -3,6 +3,7 @@ import {
   Box,
   Flex,
   Grid,
+  Heading,
   Modal,
   ModalContent,
   ModalTrigger,
@@ -15,6 +16,7 @@ import {
 import { Button, ProfileIcon } from '@components';
 import { useState } from 'react';
 import { FaCrown } from 'react-icons/fa';
+import { IoRefresh, IoClose } from 'react-icons/io5';
 
 interface Ranking {
   wins: User[];
@@ -48,22 +50,26 @@ export const Ranking = () => {
         </Flex>
       </ModalTrigger>
       <ModalContent css={{ p: 0 }}>
+        <Flex align={'center'} css={{ m: '$2 $3', ta: 'center' }} justify={'between'}>
+          <Flex as={'button'} onClick={() => refetch()}>
+            <IoRefresh size={24} />
+          </Flex>
+          <Heading size="2">Ranking</Heading>
+          <Flex as={'button'} onClick={() => setOpen(false)}>
+            <IoClose size={24} />
+          </Flex>
+        </Flex>
         <Tabs
           defaultValue={'wins'}
           onValueChange={(v) => setActiveRankingOrder(v as OrderBy)}
         >
           <TabsList asChild>
-            <Flex
-              align={'center'}
-              justify={'center'}
-              gap={'3'}
-              css={{ borderBottom: '2px solid $bg-2', py: '$3' }}
-            >
+            <Flex align={'center'} justify={'center'} gap={'3'} css={{ pb: '$3' }}>
               {orderBy.map((order, index) => (
                 <TabsTrigger value={order} asChild key={index}>
                   <Button
                     active={activeRankingOrder === order}
-                    css={{ width: 92, lh: '2rem' }}
+                    css={{ width: 84, lh: '2rem', fontSize: '$2' }}
                   >
                     {order.charAt(0).toUpperCase() + order.slice(1)}
                   </Button>
@@ -77,8 +83,7 @@ export const Ranking = () => {
               {data && (
                 <Box as={'ul'}>
                   {data[order].map((user, index) => (
-                    <Grid
-                      columns={'2'}
+                    <Flex
                       as={'li'}
                       css={{ p: '$2 $3', ...(index % 2 === 0 && { bc: '$bg-2' }) }}
                       justify={'between'}
@@ -108,7 +113,9 @@ export const Ranking = () => {
                           )}
                         </Box>
                         <Box className="text-left">
-                          <Text weight={500}>{user.name}</Text>
+                          <Text weight={500} size={'4'}>
+                            {user.name}
+                          </Text>
                         </Box>
                       </Flex>
                       <Box css={{ ta: 'right', fontSize: '$3' }}>
@@ -135,7 +142,7 @@ export const Ranking = () => {
                           </Text>
                         </Box>
                       </Box>
-                    </Grid>
+                    </Flex>
                   ))}
                 </Box>
               )}

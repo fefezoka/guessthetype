@@ -14,7 +14,7 @@ const StyledTypeIcon = styled('button', {
   br: '$2',
   textShadow: '2px 2px 4px #000',
   fontSize: '$3',
-  border: '1.5px solid rgb(0,0,0,.5)',
+  border: '1px solid rgb(0,0,0,.5)',
   transition: 'all 200ms',
 
   '&:hover': {
@@ -46,7 +46,7 @@ const StyledTypeIcon = styled('button', {
     active: {
       true: {
         boxShadow: '0 0 0 2px #fb923c',
-        border: 0,
+        borderColor: 'transparent',
       },
     },
   },

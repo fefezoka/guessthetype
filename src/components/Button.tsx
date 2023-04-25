@@ -11,12 +11,12 @@ const StyledButton = styled('button', {
   ta: 'center',
   textTransform: 'uppercase',
   br: '$2',
-  border: '1.5px solid rgb(0,0,0,.2)',
+  border: '1px solid rgb(0,0,0,.2)',
   transition: 'all 200ms ease-in',
   bc: '$bg-4',
   fontSize: '$3',
 
-  '&:hover': { transform: 'scale(103%)' },
+  '&:hover': { filter: 'brightness(110%) saturate(130%)' },
   '&:disabled': { bc: '#3c4a5f' },
 
   variants: {
@@ -32,8 +32,8 @@ const StyledButton = styled('button', {
     },
     active: {
       true: {
-        borderWidth: 2,
-        borderColor: '$blue-1',
+        borderColor: 'transparent',
+        boxShadow: '0 0 2px 2px var(--colors-blue-1)',
       },
     },
   },
