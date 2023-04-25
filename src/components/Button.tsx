@@ -1,20 +1,52 @@
-import React, { ReactNode } from 'react';
+import React, { forwardRef } from 'react';
+import { styled } from 'stitches.config';
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
+interface Props extends React.ComponentProps<typeof StyledButton> {
   color?: 'green' | 'red';
 }
 
-export const Button = ({ color, children, ...props }: Props) => {
-  const bg = color ? (color === 'green' ? 'bg-[#7c5]' : 'bg-[#f42]') : 'bg-[#5b718c]';
+const StyledButton = styled('button', {
+  width: 108,
+  lh: '2.25rem',
+  ta: 'center',
+  textTransform: 'uppercase',
+  br: '$2',
+  border: '1.5px solid rgb(0,0,0,.2)',
+  transition: 'all 200ms ease-in',
+  bc: '$bg-4',
+  fontSize: '$3',
 
-  return (
-    <button
-      type="button"
-      className={`text-sm w-[108px] leading-10 text-white ${bg} text-center uppercase rounded-md border-[1.5px] text-shadow transition-all hover:scale-105 disabled:bg-[#3c4a5f] border-[rgb(0,0,0,.2)]`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
+  '&:hover': { transform: 'scale(103%)' },
+  '&:disabled': { bc: '#3c4a5f' },
+
+  variants: {
+    win: {
+      true: {
+        fontWeight: 600,
+        bc: '#7c5',
+      },
+      false: {
+        fontWeight: 600,
+        bc: '#f42',
+      },
+    },
+    active: {
+      true: {
+        borderWidth: 2,
+        borderColor: '$blue-1',
+      },
+    },
+  },
+});
+
+export const Button = forwardRef<HTMLButtonElement, Props>(
+  ({ color, children, ...props }: Props, forwardedRef) => {
+    return (
+      <StyledButton type="button" {...props} ref={forwardedRef}>
+        {children}
+      </StyledButton>
+    );
+  }
+);
+
+Button.displayName = 'Button';

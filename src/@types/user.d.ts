@@ -3,8 +3,8 @@ interface User {
   name: string;
   email: string;
   image: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   wins: number;
   winrate: number;
   rounds: number;

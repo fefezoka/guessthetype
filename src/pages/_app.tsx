@@ -2,13 +2,16 @@ import type { AppProps } from 'next/app';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
-import '../styles/global.css';
 import { DefaultSeo } from 'next-seo';
 import ogimage from '../assets/ogimage.jpg';
+import { trpc } from '../utils/trpc';
+import { global } from '@styles';
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps<{ session: Session }>) {
+function App({ Component, pageProps }: AppProps<{ session: Session }>) {
+  global();
+
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={pageProps.session}>
@@ -29,3 +32,5 @@ export default function App({ Component, pageProps }: AppProps<{ session: Sessio
     </QueryClientProvider>
   );
 }
+
+export default trpc.withTRPC(App);

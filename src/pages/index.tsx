@@ -1,70 +1,59 @@
-import axios from 'axios';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import Head from 'next/head';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useReducer, useState } from 'react';
-import { useQuery } from 'react-query';
-import { Button } from '../components/Button';
-import { Ranking } from '../components/Ranking';
-import { TypeIcon } from '../components/TypeIcon';
 import { reducer, initialState } from '../reducers/gameReducer';
 import Spinner from '../assets/Spinner.svg';
+import { trpc } from '../utils/trpc';
+import { Box, Flex, Grid, Heading, Text } from '@styles';
+import { Header, Button, TypeIcon } from '@components';
+import { NextSeo } from 'next-seo';
 
-const MAX_POKEMONS = 905;
+const types: Array<Type> = [
+  'grass',
+  'fire',
+  'water',
+  'bug',
+  'normal',
+  'ground',
+  'rock',
+  'poison',
+  'electric',
+  'fighting',
+  'flying',
+  'steel',
+  'dragon',
+  'psychic',
+  'dark',
+  'ghost',
+  'ice',
+  'fairy',
+];
 
 export default function Home() {
   const [gameData, dispatch] = useReducer(reducer, initialState);
   const [selectedTypes, setSelectedTypes] = useState<Type[]>([]);
-  const [rankingActive, setRankingActive] = useState<boolean>(false);
   const { data: session, status } = useSession();
+  const win = trpc.win.useMutation();
+  const lose = trpc.lose.useMutation();
 
-  const types: Array<{
-    name: Type;
-    color: string;
-  }> = [
-    { name: 'grass', color: 'bg-[#7c5]' },
-    { name: 'fire', color: 'bg-[#f42]' },
-    { name: 'water', color: 'bg-[#39f]' },
-    { name: 'bug', color: 'bg-[#ab2]' },
-    { name: 'normal', color: 'bg-[#aa9]' },
-    { name: 'ground', color: 'bg-[#db5]' },
-    { name: 'rock', color: 'bg-[#ba6]' },
-    { name: 'poison', color: 'bg-[#a59]' },
-    { name: 'electric', color: 'bg-[#fc3]' },
-    { name: 'fighting', color: 'bg-[#b54]' },
-    { name: 'flying', color: 'bg-[#89f]' },
-    { name: 'steel', color: 'bg-[#aab]' },
-    { name: 'dragon', color: 'bg-[#76e]' },
-    { name: 'psychic', color: 'bg-[#f59]' },
-    { name: 'dark', color: 'bg-[#754]' },
-    { name: 'ghost', color: 'bg-[#66b]' },
-    { name: 'ice', color: 'bg-[#6ef]' },
-    { name: 'fairy', color: 'bg-[#e9e]' },
-  ];
-
-  const { data: pokemon, refetch } = useQuery<Pokemon>(
-    'poke',
-    async () => {
-      const { data } = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon/${Math.ceil(Math.random() * MAX_POKEMONS)}`
-      );
-      return data;
-    },
-    { refetchOnWindowFocus: false }
-  );
+  const { data: pokemon, refetch } = trpc.pokemon.useQuery();
 
   if (status === 'loading') {
     return (
-      <div className="flex justify-center items-center h-screen flex-col gap-2">
-        <h2 className="text-2xl font-bold">Guess the Type</h2>
+      <Flex
+        justify={'center'}
+        align={'center'}
+        direction={'column'}
+        css={{ height: '100vh' }}
+      >
+        <Heading size="3">Guess the Type</Heading>
         <Image src={Spinner} alt="" height={52} width={52} />
-      </div>
+      </Flex>
     );
   }
 
   if (!pokemon) {
-    refetch();
-    return;
+    return <></>;
   }
 
   const insertGuess = (guess: Type) => {
@@ -93,122 +82,100 @@ export default function Home() {
     const equal = JSON.stringify(filter) === JSON.stringify(selectedTypes.sort());
     equal ? dispatch({ type: 'right' }) : dispatch({ type: 'wrong' });
 
-    session && updateUserOnDB(equal);
-  };
-
-  const updateUserOnDB = async (win: boolean) => {
     if (!session) {
       return;
     }
 
-    win
-      ? await axios.post(`/api/user/win`, {
-          id: session.user.id,
-          streak: gameData.streak + 1,
-        })
-      : await axios.post('/api/user/lose', { id: session.user.id });
+    equal ? win.mutate({ streak: gameData.streak }) : lose.mutate();
   };
 
   return (
     <>
-      <Head>
-        <title>Guess the type</title>
-      </Head>
-
-      <header className="flex justify-center mt-4">
-        <nav>
-          <ul className="flex gap-10 font-bold">
-            <li>
-              <button onClick={() => setRankingActive((r) => !r)}>Ranking</button>
-            </li>
-            <li>
-              {session ? (
-                <div className="flex items-center gap-2">
-                  <div className="overflow-hidden rounded-full h-8 w-8 relative">
-                    <Image src={session.user.image} alt="" fill />
-                  </div>
-                  <span>{session.user.name}</span>
-                  <button onClick={() => signOut()}>Sign out</button>
-                </div>
-              ) : (
-                <div>
-                  Login with <button onClick={() => signIn('discord')}>Discord</button>
-                </div>
-              )}
-            </li>
-          </ul>
-        </nav>
-      </header>
-
-      <main className="mt-2 flex justify-center flex-col items-center text-center gap-6 lg:mt-6">
-        <div className="relative">
-          <div className="w-[240px] h-[240px] lg:w-[300px] lg:h-[300px] relative">
+      <NextSeo title="Guess the Type" />
+      <Header />
+      <Flex
+        as={'main'}
+        justify={'center'}
+        direction={'column'}
+        align={'center'}
+        gap={'4'}
+        css={{ ta: 'center', mt: '$5' }}
+      >
+        <Box css={{ position: 'relative' }}>
+          <Box css={{ size: 240, position: 'relative', '@bp2': { size: 300 } }}>
             <Image
               src={pokemon.sprites.other['official-artwork'].front_default}
               priority
               alt=""
               fill
             />
-          </div>
-          <div className="absolute top-5 -right-16">
+          </Box>
+          <Box css={{ position: 'absolute', top: 16, right: -32 }}>
             {pokemon.types.map((type) => (
-              <div key={type.type.name} className="mb-2">
+              <Box css={{ mb: '$2' }} key={type.type.name}>
                 <TypeIcon
-                  pokemonType={
-                    (gameData.guessed &&
-                      types.find((t) => t.name === type.type.name)) || {
-                      name: 'unknown',
-                      color: 'bg-[#ccc]',
-                    }
+                  pokeType={
+                    (gameData.guessed && types.find((t) => t === type.type.name)) ||
+                    'unknown'
                   }
                 />
-              </div>
+              </Box>
             ))}
-          </div>
+          </Box>
 
-          <div className="absolute top-5 -left-16 text-xl font-bold">
-            <h3>Streak</h3>
-            <h3>{gameData.streak}</h3>
-          </div>
-          <h2 className="capitalize text-2xl font-semibold">{pokemon.name}</h2>
-        </div>
+          <Box css={{ position: 'absolute', top: 16, left: -32 }}>
+            <Text as={'p'} size={'6'} weight={600}>
+              Streak
+            </Text>
+            <Text size={'6'} weight={600}>
+              {gameData.streak}
+            </Text>
+          </Box>
+          <Heading size="3" css={{ textTransform: 'capitalize' }}>
+            {pokemon.name}
+          </Heading>
+        </Box>
 
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3">
-          {types.map((type) => (
-            <TypeIcon
-              key={type.name}
-              pokemonType={type}
-              onClick={() => insertGuess(type.name as Type)}
-              active={selectedTypes.includes(type.name)}
+        <Box>
+          <Grid
+            columns={{ '@initial': 3, '@bp2': 6 }}
+            gap={{ '@initial': '2', '@bp2': '3' }}
+            css={{ mb: '$3' }}
+          >
+            {types.map((type) => (
+              <TypeIcon
+                key={type}
+                pokeType={type}
+                onClick={() => insertGuess(type)}
+                active={selectedTypes.includes(type)}
+              >
+                {type}
+              </TypeIcon>
+            ))}
+          </Grid>
+
+          {gameData.guessed ? (
+            <Button
+              type="button"
+              onClick={() => {
+                refetch();
+                dispatch({ type: 'reset' });
+                setSelectedTypes([]);
+              }}
+              win={gameData.rightAnswer}
             >
-              {type.name}
-            </TypeIcon>
-          ))}
-        </div>
-
-        {gameData.guessed ? (
-          <Button
-            type="button"
-            onClick={() => {
-              refetch();
-              dispatch({ type: 'reset' });
-              setSelectedTypes([]);
-            }}
-            color={gameData.rightAnswer ? 'green' : 'red'}
-          >
-            {gameData.rightAnswer ? 'Right' : 'Wrong'}
-          </Button>
-        ) : (
-          <Button
-            onClick={guessTheType}
-            disabled={selectedTypes.length !== pokemon.types.length}
-          >
-            Guess
-          </Button>
-        )}
-
-        {rankingActive && <Ranking setRankingActive={setRankingActive} />}
-      </main>
+              {gameData.rightAnswer ? 'Right' : 'Wrong'}
+            </Button>
+          ) : (
+            <Button
+              onClick={guessTheType}
+              disabled={selectedTypes.length !== pokemon.types.length}
+            >
+              Guess
+            </Button>
+          )}
+        </Box>
+      </Flex>
     </>
   );
 }

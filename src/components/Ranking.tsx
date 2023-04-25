@@ -1,10 +1,20 @@
-import axios from 'axios';
-import { SetStateAction, useState } from 'react';
-import { useQuery } from 'react-query';
-import { RankingItems } from './RankingItems';
-import { IoClose, IoReload } from 'react-icons/io5';
-import Spinner from '../assets/Spinner.svg';
-import Image from 'next/image';
+import { trpc } from 'src/utils/trpc';
+import {
+  Box,
+  Flex,
+  Grid,
+  Modal,
+  ModalContent,
+  ModalTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Text,
+} from '@styles';
+import { Button, ProfileIcon } from '@components';
+import { useState } from 'react';
+import { FaCrown } from 'react-icons/fa';
 
 interface Ranking {
   wins: User[];
@@ -12,70 +22,114 @@ interface Ranking {
   streak: User[];
 }
 
-type OrderBy = 'wins' | 'winrate' | 'streak';
+const orderBy = ['wins', 'winrate', 'streak'] as const;
+type OrderBy = (typeof orderBy)[number];
 
-interface Props {
-  setRankingActive: React.Dispatch<SetStateAction<boolean>>;
-}
-
-export const Ranking = ({ setRankingActive }: Props) => {
-  const [activeOrderBy, setActiveOrderBy] = useState<OrderBy>('winrate');
-
-  const { data, isLoading, refetch } = useQuery<Ranking>('ranking', async () => {
-    const { data } = await axios.get('/api/user/ranking');
-    return data;
+export const Ranking = () => {
+  const [activeRankingOrder, setActiveRankingOrder] = useState<OrderBy>('wins');
+  const [open, setOpen] = useState<boolean>(false);
+  const { data, refetch } = trpc.ranking.useQuery(undefined, {
+    enabled: !!open,
   });
 
   return (
-    <aside className="absolute right-0 top-0 bg-bg text-sm w-screen h-screen lg:w-[450px] lg:border-l lg:border-white">
-      <div className="mt-8 relative">
-        <h3 className="text-2xl font-bold">Ranking</h3>
-        <IoClose
-          className="absolute right-5 top-2 cursor-pointer"
-          size={22}
-          onClick={() => setRankingActive(false)}
-        />
-        <IoReload
-          className="absolute left-5 top-1 cursor-pointer"
-          size={22}
-          onClick={() => refetch()}
-        />
-      </div>
-      <div className="flex gap-4 justify-center py-2 border-b">
-        <button
-          type="button"
-          className={`${activeOrderBy === 'winrate' ? 'border-b font-bold' : ''}`}
-          onClick={() => setActiveOrderBy('winrate')}
+    <Modal open={open} onOpenChange={setOpen}>
+      <ModalTrigger asChild>
+        <Flex as={'button'}>
+          <Text weight={600}>Ranking</Text>
+        </Flex>
+      </ModalTrigger>
+      <ModalContent css={{ p: 0 }}>
+        <Tabs
+          defaultValue={'wins'}
+          onValueChange={(v) => setActiveRankingOrder(v as OrderBy)}
         >
-          Winrate
-        </button>
-        <button
-          type="button"
-          className={`${activeOrderBy === 'wins' ? 'border-b font-bold' : ''}`}
-          onClick={() => setActiveOrderBy('wins')}
-        >
-          Wins
-        </button>
-        <button
-          type="button"
-          className={`${activeOrderBy === 'streak' ? 'border-b font-bold' : ''}`}
-          onClick={() => setActiveOrderBy('streak')}
-        >
-          Streak
-        </button>
-      </div>
+          <TabsList asChild>
+            <Flex
+              align={'center'}
+              justify={'center'}
+              gap={'3'}
+              css={{ borderBottom: '2px solid $bg-2', py: '$3' }}
+            >
+              {orderBy.map((order, index) => (
+                <TabsTrigger value={order} asChild key={index}>
+                  <Button
+                    active={activeRankingOrder === order}
+                    css={{ width: 92, lh: '2rem' }}
+                  >
+                    {order.charAt(0).toUpperCase() + order.slice(1)}
+                  </Button>
+                </TabsTrigger>
+              ))}
+            </Flex>
+          </TabsList>
 
-      <div>
-        {isLoading && (
-          <div className="flex justify-center mt-2">
-            <Image src={Spinner} alt="" height={48} width={48} />
-          </div>
-        )}
-        {data &&
-          ((activeOrderBy === 'streak' && <RankingItems ranking={data.streak} />) ||
-            (activeOrderBy === 'winrate' && <RankingItems ranking={data.winrate} />) ||
-            (activeOrderBy === 'wins' && <RankingItems ranking={data.wins} />))}
-      </div>
-    </aside>
+          {orderBy.map((order, index) => (
+            <TabsContent value={order} key={index}>
+              {data && (
+                <Box as={'ul'}>
+                  {data[order].map((user, index) => (
+                    <Grid
+                      columns={'2'}
+                      as={'li'}
+                      css={{ p: '$2 $3', ...(index % 2 === 0 && { bc: '$bg-2' }) }}
+                      justify={'between'}
+                      align={'center'}
+                      key={user.id}
+                    >
+                      <Flex align={'center'} gap={'2'}>
+                        <Text as={'p'}>{index + 1}º</Text>
+                        <Box css={{ position: 'relative' }}>
+                          <ProfileIcon src={user.image} alt="" css={{ size: 52 }} />
+                          {index === 0 && (
+                            <Box
+                              as={FaCrown}
+                              css={{
+                                position: 'absolute',
+                                top: -10,
+                                left: 15,
+                                size: 20,
+                                color: 'Yellow',
+                              }}
+                            />
+                          )}
+                        </Box>
+                        <Box className="text-left">
+                          <Text weight={500}>{user.name}</Text>
+                        </Box>
+                      </Flex>
+                      <Box css={{ ta: 'right', fontSize: '$3' }}>
+                        <Box>
+                          <Text size={'3'} weight={600}>
+                            {user.wins}{' '}
+                          </Text>
+                          wins in{' '}
+                          <Text size={'3'} weight={600}>
+                            {user.rounds}{' '}
+                          </Text>
+                          rounds
+                        </Box>
+                        <Box>
+                          Winrate:{' '}
+                          <Text size={'3'} weight={600}>
+                            {user.winrate.toFixed(1)}%
+                          </Text>
+                        </Box>
+                        <Box>
+                          Max streak:{' '}
+                          <Text size={'3'} weight={600}>
+                            {user.maxStreak}
+                          </Text>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Box>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </ModalContent>
+    </Modal>
   );
 };
