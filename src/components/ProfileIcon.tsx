@@ -3,13 +3,13 @@ import React, { forwardRef, useState } from 'react';
 import { CSS } from '../../stitches.config';
 import { Box } from '@styles';
 
-interface ProfileIconProps extends React.ComponentProps<typeof Image> {
+interface IProfileIcon extends React.ComponentProps<typeof Image> {
   src: string;
   css?: CSS;
 }
 
-export const ProfileIcon = forwardRef<HTMLImageElement, ProfileIconProps>(
-  ({ src, css, ...props }: ProfileIconProps, forwardedRef) => {
+export const ProfileIcon = forwardRef<HTMLImageElement, IProfileIcon>(
+  ({ src, css, ...props }: IProfileIcon, forwardedRef) => {
     const [error, setError] = useState(false);
 
     return (

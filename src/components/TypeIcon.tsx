@@ -1,10 +1,14 @@
 import React from 'react';
-import { styled } from 'stitches.config';
+import { keyframes, styled } from 'stitches.config';
 
-interface ITypeIcon extends React.ComponentProps<typeof StyledTypeIcon> {
-  pokeType: Type;
-  active?: boolean;
-}
+const shake = keyframes({
+  '0%': { transform: 'skewY(-12deg)' },
+  '5%': { transform: 'skewY(12deg)' },
+  '10% ': { transform: 'skewY(-12deg)' },
+  '15% ': { transform: 'skewY(12deg)' },
+  '20% ': { transform: 'skewY(0deg) ' },
+  '100%': { transform: 'skewY(0deg) ' },
+});
 
 const StyledTypeIcon = styled('button', {
   width: 90,
@@ -18,7 +22,7 @@ const StyledTypeIcon = styled('button', {
   transition: 'all 200ms',
 
   '&:hover': {
-    filter: 'brightness(110%) saturate(130%)',
+    filter: 'brightness(110%) saturate(120%)',
   },
 
   variants: {
@@ -49,13 +53,21 @@ const StyledTypeIcon = styled('button', {
         borderColor: 'transparent',
       },
     },
+    lose: {
+      true: {
+        animation: `800ms ${shake} linear`,
+      },
+    },
   },
 });
 
-export const TypeIcon = ({ pokeType, ...props }: ITypeIcon) => {
+export const TypeIcon = ({
+  pokeType,
+  ...props
+}: React.ComponentProps<typeof StyledTypeIcon>) => {
   return (
     <StyledTypeIcon type="button" pokeType={pokeType} {...props}>
-      {pokeType}
+      {pokeType as string}
     </StyledTypeIcon>
   );
 };

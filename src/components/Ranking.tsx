@@ -2,7 +2,6 @@ import { trpc } from 'src/utils/trpc';
 import {
   Box,
   Flex,
-  Grid,
   Heading,
   Modal,
   ModalContent,
@@ -17,12 +16,6 @@ import { Button, ProfileIcon } from '@components';
 import { useState } from 'react';
 import { FaCrown } from 'react-icons/fa';
 import { IoRefresh, IoClose } from 'react-icons/io5';
-
-interface Ranking {
-  wins: User[];
-  winrate: User[];
-  streak: User[];
-}
 
 const orderBy = ['wins', 'winrate', 'streak'] as const;
 type OrderBy = (typeof orderBy)[number];
@@ -68,7 +61,7 @@ export const Ranking = () => {
               {orderBy.map((order, index) => (
                 <TabsTrigger value={order} asChild key={index}>
                   <Button
-                    active={activeRankingOrder === order}
+                    active={activeRankingOrder === order ? 'standard' : undefined}
                     css={{ width: 84, lh: '2rem', fontSize: '$2' }}
                   >
                     {order.charAt(0).toUpperCase() + order.slice(1)}

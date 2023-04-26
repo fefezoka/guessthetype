@@ -64,7 +64,8 @@ export default function Home() {
     if (selectedTypes.includes(guess)) {
       setSelectedTypes(selectedTypes.filter((type) => type !== guess));
     } else {
-      setSelectedTypes([...selectedTypes, guess]);
+      selectedTypes.length !== pokemon.types.length &&
+        setSelectedTypes([...selectedTypes, guess]);
     }
   };
 
@@ -110,12 +111,15 @@ export default function Home() {
               fill
             />
             <Box css={{ position: 'absolute', top: 16, right: -32 }}>
-              {pokemon.types.map((type) => (
+              {pokemon.types.map((type, index) => (
                 <Box css={{ mb: '$2' }} key={type.type.name}>
                   <TypeIcon
+                    type="button"
+                    lose={gameData.guessed && !gameData.rightAnswer}
                     pokeType={
-                      (gameData.guessed && types.find((t) => t === type.type.name)) ||
-                      'unknown'
+                      (gameData.guessed
+                        ? types.find((t) => t === type.type.name)
+                        : selectedTypes[index]) || 'unknown'
                     }
                   />
                 </Box>
@@ -142,13 +146,12 @@ export default function Home() {
           >
             {types.map((type) => (
               <TypeIcon
+                type="button"
                 key={type}
                 pokeType={type}
                 onClick={() => insertGuess(type)}
                 active={selectedTypes.includes(type)}
-              >
-                {type}
-              </TypeIcon>
+              />
             ))}
           </Grid>
         </Box>

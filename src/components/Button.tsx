@@ -1,11 +1,6 @@
-import React, { forwardRef } from 'react';
 import { styled } from 'stitches.config';
 
-interface Props extends React.ComponentProps<typeof StyledButton> {
-  color?: 'green' | 'red';
-}
-
-const StyledButton = styled('button', {
+export const Button = styled('button', {
   width: 108,
   lh: '2.25rem',
   ta: 'center',
@@ -15,11 +10,33 @@ const StyledButton = styled('button', {
   transition: 'all 200ms ease-in',
   bc: '$bg-4',
   fontSize: '$3',
+  textShadow: '2px 2px 4px #000',
 
   '&:hover': { filter: 'brightness(110%) saturate(130%)' },
   '&:disabled': { bc: '#3c4a5f' },
 
   variants: {
+    pokeType: {
+      grass: { bc: '$grass' },
+      fire: { bc: '$fire' },
+      water: { bc: '$water' },
+      bug: { bc: '$bug' },
+      normal: { bc: '$normal' },
+      ground: { bc: '$ground' },
+      rock: { bc: '$rock' },
+      poison: { bc: '$poison' },
+      electric: { bc: '$electric' },
+      fighting: { bc: '$fighting' },
+      flying: { bc: '$flying' },
+      steel: { bc: '$steel' },
+      dragon: { bc: '$dragon' },
+      psychic: { bc: '$psychic' },
+      dark: { bc: '$dark' },
+      ghost: { bc: '$ghost' },
+      ice: { bc: '$ice' },
+      fairy: { bc: '$fairy' },
+      unknown: { bc: '$bg-3' },
+    },
     win: {
       true: {
         fontWeight: 600,
@@ -31,22 +48,19 @@ const StyledButton = styled('button', {
       },
     },
     active: {
-      true: {
-        borderColor: 'transparent',
-        boxShadow: '0 0 2px 2px var(--colors-blue-1)',
+      pokeType: {
+        true: {
+          boxShadow: '0 0 0 2px #fb923c',
+          borderColor: 'transparent',
+          filter: 'brightness(110%) saturate(120%)',
+        },
+      },
+      standard: {
+        true: {
+          borderColor: 'transparent',
+          boxShadow: '0 0 2px 2px var(--colors-blue-1)',
+        },
       },
     },
   },
 });
-
-export const Button = forwardRef<HTMLButtonElement, Props>(
-  ({ color, children, ...props }: Props, forwardedRef) => {
-    return (
-      <StyledButton type="button" {...props} ref={forwardedRef}>
-        {children}
-      </StyledButton>
-    );
-  }
-);
-
-Button.displayName = 'Button';
