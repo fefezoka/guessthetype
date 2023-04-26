@@ -52,6 +52,7 @@ export const {
       gold: '#FFD700',
       silver: 'rgb(141, 142, 145)',
       bronze: 'rgb(205, 127, 50)',
+      discord: '#5662f6',
     },
     fontSizes: {
       1: '11px',

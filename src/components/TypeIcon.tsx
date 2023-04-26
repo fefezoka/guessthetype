@@ -49,6 +49,7 @@ const StyledTypeIcon = styled('button', {
     },
     active: {
       true: {
+        filter: 'brightness(110%) saturate(120%)',
         boxShadow: '0 0 0 2px #fb923c',
         borderColor: 'transparent',
       },

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { IoCaretDown, IoCaretUp } from 'react-icons/io5';
+import { FaDiscord } from 'react-icons/fa';
 import { Ranking, ProfileIcon } from '@components';
 import { Box, Flex, Menu, MenuContent, MenuItem, MenuTrigger, Text } from '@styles';
 
@@ -42,10 +43,27 @@ export const Header = () => {
                 </MenuContent>
               </Menu>
             ) : (
-              <Box as={'button'} onClick={() => signIn('discord')}>
-                <Text weight={600}>Login with </Text>
-                <Text weight={600}>Discord</Text>
-              </Box>
+              <Flex
+                as={'button'}
+                onClick={() => signIn('discord')}
+                css={{
+                  p: '$2 $3',
+                  transition: 'all 200ms ease-in',
+                  br: '$7',
+                  '&:hover': { bc: '$bg-2' },
+                }}
+                align={'center'}
+                gap={'2'}
+              >
+                <Flex
+                  css={{ size: 24, bc: '$discord', br: '$round', overflow: 'hidden' }}
+                  align={'center'}
+                  justify={'center'}
+                >
+                  <FaDiscord size={16} />
+                </Flex>
+                <Text weight={600}>Login with Discord</Text>
+              </Flex>
             )}
           </Box>
         </Flex>
