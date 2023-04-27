@@ -48,18 +48,9 @@ export const Button = styled('button', {
       },
     },
     active: {
-      pokeType: {
-        true: {
-          boxShadow: '0 0 0 2px #fb923c',
-          borderColor: 'transparent',
-          filter: 'brightness(110%) saturate(120%)',
-        },
-      },
-      standard: {
-        true: {
-          borderColor: 'transparent',
-          boxShadow: '0 0 2px 2px var(--colors-blue-1)',
-        },
+      true: {
+        borderColor: 'transparent',
+        boxShadow: '0 0 2px 2px var(--colors-blue-1)',
       },
     },
   },

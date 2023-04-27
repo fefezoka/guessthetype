@@ -1,7 +1,6 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useReducer, useState } from 'react';
-import { reducer, initialState } from '../reducers/gameReducer';
+import { useGameStates } from '../reducers/gameReducer';
 import Spinner from '../assets/Spinner.svg';
 import { trpc } from '../utils/trpc';
 import { Box, Flex, Grid, Heading, Text } from '@styles';
@@ -30,9 +29,8 @@ const types: Array<Type> = [
 ];
 
 export default function Home() {
-  const [gameData, dispatch] = useReducer(reducer, initialState);
-  const [selectedTypes, setSelectedTypes] = useState<Type[]>([]);
   const { data: session, status } = useSession();
+  const [game, dispatch] = useGameStates();
   const win = trpc.win.useMutation();
   const lose = trpc.lose.useMutation();
 
@@ -57,20 +55,20 @@ export default function Home() {
   }
 
   const insertGuess = (guess: Type) => {
-    if (gameData.guessed) {
+    if (game.guessed) {
       return;
     }
 
-    if (selectedTypes.includes(guess)) {
-      setSelectedTypes(selectedTypes.filter((type) => type !== guess));
+    if (game.selectedTypes.includes(guess)) {
+      dispatch({ type: 'popGuess', payload: { guess: guess } });
     } else {
-      selectedTypes.length !== pokemon.types.length &&
-        setSelectedTypes([...selectedTypes, guess]);
+      game.selectedTypes.length !== pokemon.types.length &&
+        dispatch({ type: 'pushGuess', payload: { guess: guess } });
     }
   };
 
   const guessTheType = async () => {
-    if (selectedTypes.length === 0 || gameData.guessed) {
+    if (game.selectedTypes.length === 0 || game.guessed) {
       return;
     }
 
@@ -80,14 +78,14 @@ export default function Home() {
       })
       .sort();
 
-    const equal = JSON.stringify(filter) === JSON.stringify(selectedTypes.sort());
+    const equal = JSON.stringify(filter) === JSON.stringify(game.selectedTypes.sort());
     equal ? dispatch({ type: 'right' }) : dispatch({ type: 'wrong' });
 
     if (!session) {
       return;
     }
 
-    equal ? win.mutate({ streak: gameData.streak }) : lose.mutate();
+    equal ? win.mutate({ streak: game.streak }) : lose.mutate();
   };
 
   return (
@@ -99,7 +97,7 @@ export default function Home() {
         css={{
           ta: 'center',
           m: '$5 auto 0',
-          '@bp2': { maxWidth: 'fit-content' },
+          maxWidth: 'fit-content',
         }}
       >
         <Flex align={'center'} justify={'center'}>
@@ -110,26 +108,29 @@ export default function Home() {
               alt=""
               fill
             />
-            <Box css={{ position: 'absolute', top: 16, right: -32 }}>
+            <Box css={{ position: 'absolute', top: 16, right: -28 }}>
               {pokemon.types.map((type, index) => (
-                <Box css={{ mb: '$2' }} key={type.type.name}>
+                <Box css={{ mb: '$1' }} key={type.type.name}>
                   <TypeIcon
+                    css={{ lh: '2.175rem', fontSize: '$2', width: 84 }}
                     type="button"
-                    lose={gameData.guessed && !gameData.rightAnswer}
+                    lose={game.guessed && !game.rightAnswer}
                     pokeType={
-                      (gameData.guessed
+                      (game.guessed
                         ? types.find((t) => t === type.type.name)
-                        : selectedTypes[index]) || 'unknown'
+                        : game.selectedTypes[index]) || 'unknown'
                     }
                   />
                 </Box>
               ))}
             </Box>
-            <Box css={{ position: 'absolute', top: 16, left: -32 }}>
-              <Text as={'p'} weight={600}>
+            <Box css={{ position: 'absolute', top: 16, left: -26 }}>
+              <Text as={'p'} weight={600} size={'4'}>
                 Streak
               </Text>
-              <Text weight={600}>{gameData.streak}</Text>
+              <Text weight={600} size={'4'}>
+                {game.streak}
+              </Text>
             </Box>
           </Box>
         </Flex>
@@ -150,27 +151,27 @@ export default function Home() {
                 key={type}
                 pokeType={type}
                 onClick={() => insertGuess(type)}
-                active={selectedTypes.includes(type)}
+                active={game.selectedTypes.includes(type)}
               />
             ))}
           </Grid>
         </Box>
-        {gameData.guessed ? (
+        {game.guessed ? (
           <Button
             type="button"
             onClick={() => {
               refetch();
               dispatch({ type: 'reset' });
-              setSelectedTypes([]);
             }}
-            win={gameData.rightAnswer}
+            win={game.rightAnswer}
           >
-            {gameData.rightAnswer ? 'Right' : 'Wrong'}
+            {game.rightAnswer ? 'Right' : 'Wrong'}
           </Button>
         ) : (
           <Button
+            type="button"
             onClick={guessTheType}
-            disabled={selectedTypes.length !== pokemon.types.length}
+            disabled={game.selectedTypes.length !== pokemon.types.length}
           >
             Guess
           </Button>

@@ -61,7 +61,7 @@ export const Ranking = () => {
               {orderBy.map((order, index) => (
                 <TabsTrigger value={order} asChild key={index}>
                   <Button
-                    active={activeRankingOrder === order ? 'standard' : undefined}
+                    active={activeRankingOrder === order}
                     css={{ width: 84, lh: '2rem', fontSize: '$2' }}
                   >
                     {order.charAt(0).toUpperCase() + order.slice(1)}
