@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { FaCrown } from 'react-icons/fa';
+import { IoRefresh, IoClose } from 'react-icons/io5';
 import { trpc } from 'src/utils/trpc';
 import {
   Box,
@@ -11,17 +14,15 @@ import {
   TabsList,
   TabsTrigger,
   Text,
+  Button,
+  ProfileIcon,
 } from '@styles';
-import { Button, ProfileIcon } from '@components';
-import { useState } from 'react';
-import { FaCrown } from 'react-icons/fa';
-import { IoRefresh, IoClose } from 'react-icons/io5';
 
-const orderBy = ['wins', 'winrate', 'streak'] as const;
+const orderBy = ['winrate', 'wins', 'streak'] as const;
 type OrderBy = (typeof orderBy)[number];
 
 export const Ranking = () => {
-  const [activeRankingOrder, setActiveRankingOrder] = useState<OrderBy>('wins');
+  const [activeRankingOrder, setActiveRankingOrder] = useState<OrderBy>('winrate');
   const [open, setOpen] = useState<boolean>(false);
   const { data, refetch } = trpc.ranking.useQuery(undefined, {
     enabled: !!open,

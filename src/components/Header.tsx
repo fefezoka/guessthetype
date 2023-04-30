@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { IoCaretDown, IoCaretUp } from 'react-icons/io5';
 import { FaDiscord } from 'react-icons/fa';
-import { Ranking, ProfileIcon } from '@components';
-import { Box, Flex, Menu, MenuContent, MenuItem, MenuTrigger, Text } from '@styles';
+import { Ranking } from '@components';
+import {
+  Box,
+  Flex,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+  Text,
+  ProfileIcon,
+} from '@styles';
 
 export const Header = () => {
   const { data: session } = useSession();

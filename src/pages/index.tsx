@@ -3,8 +3,8 @@ import Image from 'next/image';
 import { useGameStates } from '../reducers/gameReducer';
 import Spinner from '../assets/Spinner.svg';
 import { trpc } from '../utils/trpc';
-import { Box, Flex, Grid, Heading, Text } from '@styles';
-import { Header, Button, TypeIcon } from '@components';
+import { Box, Flex, Grid, Heading, Text, Button } from '@styles';
+import { Header, TypeIcon } from '@components';
 import { NextSeo } from 'next-seo';
 
 const types: Array<Type> = [

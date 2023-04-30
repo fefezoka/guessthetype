@@ -3,6 +3,8 @@ export { Flex } from './Flex';
 export { Text } from './Text';
 export { Heading } from './Heading';
 export { Overlay } from './Overlay';
+export { Button } from './Button';
+export { ProfileIcon } from './ProfileIcon';
 export { Grid } from './Grid';
 export { global } from './global';
 export {
