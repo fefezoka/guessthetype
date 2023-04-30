@@ -1,4 +1,4 @@
-# Show Maker
+# Guess the type
 
 Jogo onde o usuário deve acertar quais são os tipos de um pokémon aleatório.
 

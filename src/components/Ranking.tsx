@@ -54,7 +54,7 @@ export const Ranking = () => {
           </Flex>
         </Flex>
         <Tabs
-          defaultValue={'wins'}
+          defaultValue={'winrate'}
           onValueChange={(v) => setActiveRankingOrder(v as OrderBy)}
         >
           <TabsList asChild>
