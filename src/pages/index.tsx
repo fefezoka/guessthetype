@@ -165,7 +165,7 @@ export default function Home() {
             }}
             win={game.rightAnswer}
           >
-            {game.rightAnswer ? 'Right' : 'Wrong'}
+            {game.rightAnswer ? 'Correct' : 'Wrong'}
           </Button>
         ) : (
           <Button
