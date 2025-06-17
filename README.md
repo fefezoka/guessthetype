@@ -8,7 +8,7 @@ Clonando o projeto e instalando as dependências
 
 ```bash
   git clone https://github.com/fefezoka/guessthetype
-  cd showmaker
+  cd guessthetype
   npm install
 ```
 
